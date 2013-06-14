@@ -21,6 +21,8 @@ import android.util.Log;
 
 public class MainActivity extends Activity {
 	private static final String TAG = "DataMe";
+	private static final String R_CMD = "R -f /data/local/bt/bt1.R";
+	private static final String SH_CMD = "/data/local/bt/bt.sh";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,16 +40,15 @@ public class MainActivity extends Activity {
         		
         		//execute cmd
                 Log.v(TAG," Button Command");
-                //can't get shell to work so send all one string
-        			String shell ="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/data/local/gcc/lib;export PATH=$PATH:/data/local/gcc/bin;ls;R -f /data/local/bt/bt1.R";
-        			String[] result = new SetCmd(shell).set();
-                    Log.v(TAG," return from cmd " + result);
+                //Send Shell Command
+    			String shell = SH_CMD;
+    			SetCmd sc = new SetCmd();
+    			String[] result = sc.set(shell, false);
+        		Log.v(TAG, shell);
 
-                //display R command
-        			shell = "R -f /data/local/bt/bt1.R";
-        			tb1.setText(shell);
+                //display R command;
+        			tb1.setText(R_CMD);
         			//shell = tb1.toString(); //later for entering command
-
         			tb2.setText(result[0]);
         			tb3.setText(FileStuff.readFromFile("/data/local/bt/bt1.txt"));
         	}
