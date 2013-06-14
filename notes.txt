@@ -1,0 +1,242 @@
+Mock set up
+1. Make an interface:
+public interface Environmental {
+public long getTime();
+// Other methods omitted...
+}
+2. Real implementation:
+public class SystemEnvironment implements Environmental {
+public long getTime() {
+return System.currentTimeMillis();
+}
+// other methods ...
+}
+3. Mock implementation:
+public class MockSystemEnvironment
+implements Environmental {
+public long getTime() {
+return current_time;
+}
+public void setTime(long aTime) {
+current_time = aTime;
+}
+private long current_time;
+// ...
+}
+**
+import junit.framework.*;
+import java.util.Calendar;
+public class TestChecker extends TestCase f
+public void testQuittingTime() f
+MockSystemEnvironment env =
+new MockSystemEnvironment();
+// Set up a target test time
+Calendar cal = Calendar.getInstance();
+cal.set(Calendar.YEAR, 2004);
+cal.set(Calendar.MONTH, 10);
+cal.set(Calendar.DAY_OF_MONTH, 1);
+cal.set(Calendar.HOUR_OF_DAY, 16);
+cal.set(Calendar.MINUTE, 55);
+long t1 = cal.getTimeInMillis();
+env.setTime(t1);
+Checker checker = new Checker(env);
+// Run the checker
+checker.reminder();
+// Nothing should have been played yet
+assertFalse(env.wavWasPlayed());
+// Advance the time by 5 minutes
+t1 += (5 * 60 * 1000);
+env.setTime(t1);
+// Now run the checker
+checker.reminder();
+// Should have played now
+assertTrue(env.wavWasPlayed());
+// Reset the flag so we can try again
+env.resetWav();
+// Advance the time by 2 hours and check
+t1 += 2 * 60 * 60 * 1000;
+env.setTime(t1);
+checker.reminder();
+assertTrue(env.wavWasPlayed());
+g
+}
+
+*****
+import junit.framework.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+public class TestLargestDataFile extends TestCase{
+public TestLargestDataFile(String name){
+super(name);
+}
+/* Run all the tests in testdata.txt (does not test
+* exception case). We’ll get an error if any of the
+*{ile I/O goes wrong.
+*/
+public void testFromFile() throws Exception{
+String line;
+BufferedReader rdr = new BufferedReader(
+new FileReader(
+"testdata.txt"));
+while ((line = rdr.readLine()) != null){
+if (line.startsWith("#")){ // Ignore comments
+continue;
+g
+StringTokenizer st = new StringTokenizer(line);
+if (!st.hasMoreTokens()){
+continue; // Blank line
+}
+// Get the expected value
+String val = st.nextToken();
+int expected = Integer.valueOf(val).intValue();
+// And the arguments to Largest
+ArrayList argument_list = new ArrayList();
+while (st.hasMoreTokens()){
+argument_list.add(Integer.valueOf(
+st.nextToken()));
+}
+// Transfer object list into native array
+int[] arguments = new int[argument_list.size()];
+for (int i=0; i < argument_list.size(); i++){
+arguments[i] = ((Integer)argument_list.
+get(i)).intValue();
+}
+// And run the assert
+assertEquals(expected,
+Largest.largest(arguments));
+}
+}}
+
+
+*** TEST SKELETON
+// package...
+import junit.framework.*;
+// Change all occurrences of "Skeleton" below
+// as appropriate
+public class TestSkeleton extends TestCase f
+/**
+* Per-method test set up
+*/
+public void setUp() f
+g
+/**
+* Per-method test tear down
+*/
+public void tearDown() f
+g
+/**
+* Add tests here:
+* public void testName() ...
+*/
+public TestSkeleton(String name) f
+super(name);
+g
+/**
+* Default suite method
+*/
+public static Test suite() f
+return new TestSuite(TestSkeleton.class);
+g
+/** Note -- "main" will only be run when invoked
+* individually from the command line
+* (not via Ant’s JUnit Task, etc.)
+*/
+public static void main (String[] args) f
+TestSuite suite = new TestSuite();
+if (args.length != 0) f
+// Run specific tests as indicated from the
+// command line
+for (int i=0; i< args.length; i++) f
+f
+suite.addTest(new TestSkeleton(args[i]));
+g
+g else f
+// Dynamically discover all of them, or use
+// user-defined suite
+suite.addTest(TestSkeleton.suite());
+g
+junit.textui.TestRunner.run(suite);
+g
+g
+
+**** TEST FINDER
+import junit.framework.*;
+import java.lang.reflect.Method;
+public class TestFinder f
+/* Note -- "main" will only be run when invoked individually
+* from the command line (not via Ant, etc.).
+* This code dynamically builds a test suite, based either
+* on command-line arguments, or on
+* reflection into the specified class.
+*/
+public static void run(Class which, String[] args) f
+TestSuite suite = null;
+if (args.length != 0) f
+// Run specific tests as indicated from the command line
+try f
+java.lang.reflect.Constructor ctor;
+ctor = which.getConstructor(new Class[]
+fString.classg);
+suite = new TestSuite();
+for (int i=0; i< args.length; i++) f
+suite.addTest((TestCase)ctor.newInstance(
+new Object[]fargs[i]g));
+g
+g catch (Exception e) f
+System.err.println("Unable to instantiate " +
+which.getName() +
+": " + e.getMessage());
+System.exit(1);
+g
+g else f
+// Call the suite() method of the given class,
+// if there is one
+try f
+Method suite_method = which.getMethod("suite",
+new Class[0]);
+suite = (TestSuite) suite_method.invoke(null,
+null);
+null);
+g catch (Exception e) f
+// Whoops! No public suite() in that class.
+// Make a default list using reflection:
+suite = new TestSuite(which);
+g
+g
+junit.textui.TestRunner.run(suite);
+g
+g
+
+*** TEST SAMPLE SIMPLE SKELETON
+import junit.framework.*;
+public class TestSample extends TestCase f
+public TestSample(String name) f super(name); g
+/**
+* Per-test setup
+*/
+public void setUp() f
+g
+/**
+* Per-test teardown
+*/
+public void tearDown() f
+g
+/*
+* Tests go here...
+*/
+public void testMe() f
+assertTrue(true);
+g
+/**
+* Default suite() method discovers all tests...
+*/
+public static Test suite() f
+return new TestSuite(TestSample.class);
+g
+public static void main(String[] args) f
+TestFinder.run(TestSample.class, args);
+g
+g;
+
+***
